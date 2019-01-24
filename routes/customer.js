@@ -75,9 +75,32 @@ router.post('/register', async (req, res) => {
         password: req.body.password
     });
     const salt = await bcrypt.genSalt(10);
-    res.send(salt);
+    customer.password = await bcrypt.hash(customer.password, salt);
+    const result = await customer.save();
+    const token = customer.generateAuthToken();
+    res.send(token);
 });
 
+//Login customer
+router.post('/login', async (req, res) => {
+    const { error } = validateLogin(req.body);
+    if (error) {
+        res.status(400).send(error.details[0].message);
+        return;
+    }
+    const customer = await Customer.findOne({ email: req.body.email });
+    if (!customer) {
+        res.status(404).send('User not found.');
+        return;
+    }
+    const validPassword = await bcrypt.compare(req.body.password, customer.password);
+    if (!validPassword) {
+        res.status(400).send('Invalid Password.');
+        return;
+    }
+    const token = customer.generateAuthToken();
+    res.send(token);
+});
 
 function validateCustomer(customer) {
     const schema = {
@@ -87,6 +110,15 @@ function validateCustomer(customer) {
         password: Joi.string().min(3).max(1024).required()
     }
     const result = Joi.validate(customer, schema);
+    return result;
+}
+
+function validateLogin(login) {
+    const schema = {
+        email: Joi.string().min(3).max(50).required().email(),
+        password: Joi.string().min(3).max(1024).required()
+    }
+    const result = Joi.validate(login, schema);
     return result;
 }
 
