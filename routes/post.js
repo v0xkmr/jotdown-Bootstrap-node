@@ -32,7 +32,7 @@ const Post = mongoose.model('Post', postSchema);
 //Get all the post with customerId
 router.get('/all/:id', async (req, res) => {
     //Check for valid Mongoose ObjectId
-    const valid = mongoose.Types.ObjectId.isValid(req.param.id);
+    const valid = mongoose.Types.ObjectId.isValid(req.params.id);
     if (!valid) {
         res.status(400).send(`Customer id ${req.params.id} not valid`);
         return;
