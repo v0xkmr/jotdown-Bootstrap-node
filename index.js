@@ -7,7 +7,7 @@ const { customer } = require('./routes/customer');
 const app = express();
 app.use(cors())
 
-mongoose.connect('mongodb+srv://vijay:vijay@mongocluster-bjhe8.mongodb.net/jotdownBootstrap?retryWrites=true')
+mongoose.connect('mongodb+srv://vijay:vijay@mongocluster-bjhe8.mongodb.net/jotdown?retryWrites=true')
     .then(() => { console.log('Connected to MongoDB'); })
     .catch((e) => { console.log(e) });
 
